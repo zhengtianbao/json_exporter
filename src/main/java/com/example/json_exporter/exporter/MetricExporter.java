@@ -19,7 +19,6 @@ public class MetricExporter {
             TextFormat.write004(writer, collectorRegistry.metricFamilySamples());
             return writer.toString();
         } catch (IOException e) {
-            // This actually never happens since StringWriter::write() doesn't throw any IOException
             throw new RuntimeException("Writing metrics failed", e);
         }
     }

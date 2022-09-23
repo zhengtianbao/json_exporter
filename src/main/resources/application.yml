@@ -1,0 +1,26 @@
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/prometheus?useUnicode=true&characterEncoding=utf8&useSSL=false
+    username: root
+    password: 123456
+
+mybatis-plus:
+  # 支持统配符 * 或者 ; 分割
+  typeEnumsPackage: com.example.json_exporter.common.constant
+
+logging:
+  level:
+    root: info
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

@@ -1,70 +1,66 @@
 package com.example.json_exporter.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.json_exporter.mapper.LabelMapper;
+import com.example.json_exporter.mapper.MetricMapper;
+import com.example.json_exporter.mapper.ServerMapper;
+import com.example.json_exporter.mapper.ValueMapper;
 import com.example.json_exporter.pojo.*;
-import com.example.json_exporter.service.ExporterService;
+import com.example.json_exporter.service.ExporterServerService;
 import io.prometheus.client.Collector;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import static com.example.json_exporter.pojo.JSONMetric.ParseType.OBJECT;
-import static com.example.json_exporter.pojo.JSONMetric.ParseType.VALUE;
+import static com.example.json_exporter.common.constant.ParseType.OBJECT;
+import static com.example.json_exporter.common.constant.ParseType.VALUE;
+
 
 @Slf4j
 @Service
-public class TestExporterServiceImpl implements ExporterService {
+@Qualifier("exporterServerService")
+public class ExporterServerServiceImpl extends ServiceImpl<ServerMapper, Server> implements ExporterServerService {
+
+    @Autowired
+    private ServerMapper serverMapper;
+
+    @Autowired
+    private MetricMapper metricMapper;
+
+    @Autowired
+    private LabelMapper labelMapper;
+
+    @Autowired
+    private ValueMapper valueMapper;
+
     @Override
-    public Server getServerByID(Integer id) {
-        Server server = new Server();
-        server.setName("远程公共服务平台");
-        server.setUrl("http://localhost:8000/examples/data.json");
-        return server;
+    public ArrayList<Metric> getMetricsByServerID(Integer id) {
+        ArrayList<Metric> rst = new ArrayList<>();
+        Server server = serverMapper.selectById(id);
+        QueryWrapper<Metric> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("server_id", server.getId());
+        List<Metric> metrics = metricMapper.selectList(queryWrapper);
+        log.info(metrics.toString());
+        for (Metric metric: metrics) {
+            QueryWrapper<Label> labelQueryWrapper = new QueryWrapper<>();
+            labelQueryWrapper.eq("metric_id", metric.getId());
+            List<Label> labels = labelMapper.selectList(labelQueryWrapper);
+            metric.setLabels(new ArrayList<>(labels));
+            QueryWrapper<Value> valueQueryWrapper = new QueryWrapper<>();
+            valueQueryWrapper.eq("metric_id", metric.getId());
+            List<Value> values = valueMapper.selectList(valueQueryWrapper);
+            metric.setValues(new ArrayList<>(values));
+        }
+        return new ArrayList<>(metrics);
     }
 
     @Override
-    public ArrayList<Metric> getMetricsByServerID(String serverName) {
-        ArrayList<Metric> serverMetrics = new ArrayList<>();
-        Metric m1 = new Metric();
-        m1.setName("example_global_value");
-        m1.setPath("$.counter");
-        m1.setHelp("Example of a top-level global value scrape in the json");
-        m1.setType(VALUE);
-        ArrayList<Label> m1labels = new ArrayList<>();
-        Label l = new Label();
-        l.setName("location");
-        l.setPath("$.location");
-        m1labels.add(l);
-        m1.setLabels(m1labels);
-        m1.setValueType(Metric.ValueType.ValueTypeUntyped);
-        serverMetrics.add(m1);
-        Metric m2 = new Metric();
-        m2.setName("example_value");
-        m2.setPath("$.values[?(@.state == \"ACTIVE\")]");
-        m2.setHelp("Example of sub-level value scrapes from a json");
-        m2.setType(OBJECT);
-        ArrayList<Label> m2labels = new ArrayList<>();
-        Label l2 = new Label();
-        l2.setName("id");
-        l2.setPath("$.id");
-        m2labels.add(l2);
-        m2.setLabels(m2labels);
-        ArrayList<Value> m2values = new ArrayList<>();
-        Value m2v1 = new Value();
-        m2v1.setName("count");
-        m2v1.setPath("$.count");
-        m2values.add(m2v1);
-        Value m2v2 = new Value();
-        m2v2.setName("boolean");
-        m2v2.setPath("$.some_boolean");
-        m2values.add(m2v2);
-        m2.setValues(m2values);
-        m2.setValueType(Metric.ValueType.ValueTypeUntyped);
-        serverMetrics.add(m2);
-        return serverMetrics;
-    }
-    @Override
-    public ArrayList<JSONMetric> getJSONMetricsByServerID(String id) {
+    public ArrayList<JSONMetric> getJSONMetricsByServerID(Integer id) {
         ArrayList<Metric> metrics = this.getMetricsByServerID(id);
         return this.convertMetricsToJSONMetrics(metrics);
     }

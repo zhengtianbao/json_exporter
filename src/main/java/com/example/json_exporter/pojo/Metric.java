@@ -1,7 +1,12 @@
 package com.example.json_exporter.pojo;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.example.json_exporter.common.constant.ParseType;
+import com.example.json_exporter.common.constant.ValueType;
+import lombok.Data;
 
 import java.util.ArrayList;
 
@@ -9,43 +14,36 @@ import java.util.ArrayList;
  * 指标类
  *
  */
-@Getter
-@Setter
+@Data
+@TableName("metric")
 public class Metric {
+    @TableId(type = IdType.AUTO)
+    public Integer id;
+
     /** 指标名称 */
     public String name;
+
     /** 指标对应的JSONPath */
     public String path;
+
     /** 指标对应prometheus的metric帮助信息 */
     public String help;
+
     /** JSONPath解析类型 */
-    public JSONMetric.ParseType type;
+    public ParseType type;
+
     /** 指标的label键值对 值为label的JSONPath */
-//    public HashMap<String, String> labels;
+    @TableField(exist = false)
     public ArrayList<Label> labels;
+
     /** 指标对应prometheus的metric类型 */
     public ValueType valueType;
+
     /** 解析Object类型的指标值 健为value的名字 值为value的JSONPath */
-//    public HashMap<String, String> values;
+    @TableField(exist = false)
     public ArrayList<Value> values;
 
-    @Override
-    public String toString() {
-        return "Metric{" +
-                "name='" + name + '\'' +
-                ", path='" + path + '\'' +
-                ", help='" + help + '\'' +
-                ", type=" + type +
-                ", labels=" + labels +
-                ", valueType=" + valueType +
-                ", values=" + values +
-                '}';
-    }
+    public Integer serverId;
 
-    public static enum ValueType {
-        ValueTypeGauge,
-        ValueTypeCounter,
-        ValueTypeUntyped;
-    }
 
 }

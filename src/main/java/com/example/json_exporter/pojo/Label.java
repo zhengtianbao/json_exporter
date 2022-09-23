@@ -1,19 +1,15 @@
 package com.example.json_exporter.pojo;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class Label {
+    @TableId(type = IdType.AUTO)
+    public Integer id;
+
     public String name;
     public String path;
-
-    @Override
-    public String toString() {
-        return "Label{" +
-                "name='" + name + '\'' +
-                ", path='" + path + '\'' +
-                '}';
-    }
+    public Integer metricId;
 }

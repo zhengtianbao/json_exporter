@@ -1,5 +1,6 @@
 package com.example.json_exporter.pojo;
 
+import com.example.json_exporter.common.constant.ParseType;
 import io.prometheus.client.Collector;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,9 +29,5 @@ public class JSONMetric {
     public String valueJSONPath;
     /** 指标对应prometheus的metric类型 */
     public Collector.Type valueType;
-    public static enum ParseType {
-        VALUE,
-        OBJECT;
-    }
 
 }

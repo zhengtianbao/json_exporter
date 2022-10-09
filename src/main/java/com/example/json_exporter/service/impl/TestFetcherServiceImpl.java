@@ -2,11 +2,15 @@ package com.example.json_exporter.service.impl;
 
 import com.example.json_exporter.service.FetcherService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
 public class TestFetcherServiceImpl implements FetcherService {
+
+    private final RestTemplate restTemplate;
 
     private String testJSON = "{\n" +
             "    \"counter\": 1234,\n" +
@@ -33,9 +37,13 @@ public class TestFetcherServiceImpl implements FetcherService {
             "    ],\n" +
             "    \"location\": \"mars\"\n" +
             "}";
+
+    public TestFetcherServiceImpl(RestTemplateBuilder restTemplateBuilder) {
+        this.restTemplate = restTemplateBuilder.build();
+    }
+
     @Override
     public String fetch(String url) {
-        log.debug(url);
-        return this.testJSON;
+        return this.restTemplate.getForObject(url, String.class);
     }
 }

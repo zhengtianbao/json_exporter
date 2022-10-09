@@ -18,6 +18,7 @@ import java.util.List;
 
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
+@CrossOrigin
 @ApiOperation(value = "json_exporter接口")
 @RequestMapping("/exporter")
 @RestController
@@ -43,7 +44,7 @@ public class JsonExportMetricController {
     @ApiOperation(value = "查询Server列表信息")
     @GetMapping("server")
     public ResponseEntity<Object> getServerList() {
-        List<Server> servers = exporterServerService.list();
+        List<Server> servers = exporterServerService.listDetail();
         return new ResponseEntity<>(servers, HttpStatus.OK);
     }
 
@@ -57,22 +58,23 @@ public class JsonExportMetricController {
     @ApiOperation(value = "增加Server信息")
     @PostMapping("server")
     public ResponseEntity<Object> addServer(@RequestBody Server server) {
-        exporterServerService.save(server);
+        log.info(server.toString());
+        exporterServerService.saveWithDetail(server);
         return new ResponseEntity<>("Server is created successfully", HttpStatus.CREATED);
     }
 
     @ApiOperation(value = "删除Server信息")
     @DeleteMapping("server/{id}")
     public ResponseEntity<Object> deleteServer(@PathVariable("id") Integer id){
-        exporterServerService.removeById(id);
-        return new ResponseEntity<>("Server is deleted successsfully", HttpStatus.OK);
+        exporterServerService.removeDetailById(id);
+        return new ResponseEntity<>("Server is deleted successfully", HttpStatus.OK);
     }
 
     @ApiOperation(value = "更新Server信息")
     @PutMapping("server/{id}")
     public ResponseEntity<Object> updateServer(@PathVariable("id") Integer id, @RequestBody Server server) {
-        exporterServerService.updateById(server);
-        return new ResponseEntity<>("Server is updated successsfully", HttpStatus.OK);
+        exporterServerService.updateDetailById(id, server);
+        return new ResponseEntity<>("Server is updated successfully", HttpStatus.OK);
     }
 
     @ApiOperation(value = "查询Metric列表信息")
@@ -100,14 +102,14 @@ public class JsonExportMetricController {
     @DeleteMapping("metric/{id}")
     public ResponseEntity<Object> deleteMetric(@PathVariable("id") Integer id){
         exporterMetricService.removeById(id);
-        return new ResponseEntity<>("Metric is deleted successsfully", HttpStatus.OK);
+        return new ResponseEntity<>("Metric is deleted successfully", HttpStatus.OK);
     }
 
     @ApiOperation(value = "更新Metric信息")
     @PutMapping("metric/{id}")
     public ResponseEntity<Object> updateMetric(@PathVariable("id") Integer id, @RequestBody Metric metric) {
         exporterMetricService.updateById(metric);
-        return new ResponseEntity<>("Metric is updated successsfully", HttpStatus.OK);
+        return new ResponseEntity<>("Metric is updated successfully", HttpStatus.OK);
     }
 
     @ApiOperation(value = "查询Label列表信息")
@@ -135,14 +137,14 @@ public class JsonExportMetricController {
     @DeleteMapping("label/{id}")
     public ResponseEntity<Object> deleteLabel(@PathVariable("id") Integer id){
         exporterLabelService.removeById(id);
-        return new ResponseEntity<>("Label is deleted successsfully", HttpStatus.OK);
+        return new ResponseEntity<>("Label is deleted successfully", HttpStatus.OK);
     }
 
     @ApiOperation(value = "更新Label信息")
     @PutMapping("label/{id}")
     public ResponseEntity<Object> updateLabel(@PathVariable("id") Integer id, @RequestBody Label label) {
         exporterLabelService.updateById(label);
-        return new ResponseEntity<>("Label is updated successsfully", HttpStatus.OK);
+        return new ResponseEntity<>("Label is updated successfully", HttpStatus.OK);
     }
 
     @ApiOperation(value = "查询Value列表信息")
@@ -170,14 +172,14 @@ public class JsonExportMetricController {
     @DeleteMapping("value/{id}")
     public ResponseEntity<Object> deleteValue(@PathVariable("id") Integer id){
         exporterValueService.removeById(id);
-        return new ResponseEntity<>("Value is deleted successsfully", HttpStatus.OK);
+        return new ResponseEntity<>("Value is deleted successfully", HttpStatus.OK);
     }
 
     @ApiOperation(value = "更新Value信息")
     @PutMapping("value/{id}")
     public ResponseEntity<Object> updateValue(@PathVariable("id") Integer id, @RequestBody Value value) {
         exporterValueService.updateById(value);
-        return new ResponseEntity<>("Value is updated successsfully", HttpStatus.OK);
+        return new ResponseEntity<>("Value is updated successfully", HttpStatus.OK);
     }
 
     @ApiOperation(value = "获取指定serverId符合prometheus格式的metrics信息")
@@ -185,7 +187,7 @@ public class JsonExportMetricController {
     @RequestMapping(value = "/metrics", method = RequestMethod.GET)
     public ResponseEntity<Object> metrics(@RequestParam Integer serverId) {
         MetricExporter exporter = new MetricExporter();
-        Server server = exporterServerService.getById(1);
+        Server server = exporterServerService.getById(serverId);
         log.info(server.toString());
         String jsonData = fetcherService.fetch(server.getUrl());
         ArrayList<JSONMetric> jmetrics = exporterServerService.getJSONMetricsByServerID(serverId);

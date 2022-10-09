@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.json_exporter.common.constant.ParseType.OBJECT;
 import static com.example.json_exporter.common.constant.ParseType.VALUE;
@@ -26,6 +27,28 @@ public class TestExporterServerServiceImpl extends ServiceImpl<ServerMapper, Ser
         return server;
     }
 
+    @Override
+    public List<Server> listDetail() {
+        Server server = new Server();
+        List<Server> servers = new ArrayList<>();
+        servers.add(server);
+        return servers;
+    }
+
+    @Override
+    public void saveWithDetail(Server server) {
+        log.info(server.toString());
+    }
+
+    @Override
+    public void removeDetailById(Integer id) {
+        log.info(id.toString());
+    }
+
+    @Override
+    public void updateDetailById(Integer id, Server server) {
+        log.info(server.toString());
+    }
     @Override
     public ArrayList<Metric> getMetricsByServerID(Integer id) {
         ArrayList<Metric> serverMetrics = new ArrayList<>();

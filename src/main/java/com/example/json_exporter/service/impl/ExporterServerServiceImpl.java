@@ -19,6 +19,7 @@ import java.util.List;
 
 import static com.example.json_exporter.common.constant.ParseType.OBJECT;
 import static com.example.json_exporter.common.constant.ParseType.VALUE;
+import static com.example.json_exporter.common.constant.ValueType.ValueTypeUntyped;
 
 
 @Slf4j
@@ -39,8 +40,114 @@ public class ExporterServerServiceImpl extends ServiceImpl<ServerMapper, Server>
     private ValueMapper valueMapper;
 
     @Override
+    public List<Server> listDetail() {
+        QueryWrapper<Server> queryWrapper = new QueryWrapper<>();
+        List<Server> servers = serverMapper.selectList(queryWrapper);
+        for (int i = 0; i < servers.size(); i++) {
+            QueryWrapper<Metric> queryWrapper1 = new QueryWrapper<>();
+            queryWrapper1.eq("server_id", servers.get(i).getId());
+            List<Metric> metrics = metricMapper.selectList(queryWrapper1);
+            for (int j = 0; j < metrics.size(); j++) {
+                QueryWrapper<Label> queryWrapper2 = new QueryWrapper<>();
+                queryWrapper2.eq("metric_id", metrics.get(j).getId());
+                List<Label> labels = labelMapper.selectList(queryWrapper2);
+                metrics.get(j).setLabels(new ArrayList<>(labels));
+                QueryWrapper<Value> queryWrapper3 = new QueryWrapper<>();
+                queryWrapper3.eq("metric_id", metrics.get(j).getId());
+                List<Value> values = valueMapper.selectList(queryWrapper3);
+                metrics.get(j).setValues(new ArrayList<>(values));
+            }
+            servers.get(i).setMetrics(new ArrayList<>(metrics));
+        }
+        return servers;
+    }
+
+    @Override
+    public void saveWithDetail(Server server) {
+        serverMapper.insert(server);
+        log.info(server.toString());
+        for (int i = 0; i < server.metrics.size(); i++) {
+            server.metrics.get(i).setServerId(server.getId());
+            server.metrics.get(i).setValueType(ValueTypeUntyped);
+            metricMapper.insert(server.metrics.get(i));
+            for (int j = 0; j < server.metrics.get(i).getLabels().size(); j++) {
+                server.metrics.get(i).getLabels().get(j).setMetricId(server.metrics.get(i).getId());
+                labelMapper.insert(server.metrics.get(i).getLabels().get(j));
+            }
+            for (int k = 0; k < server.metrics.get(i).getValues().size(); k++) {
+                server.metrics.get(i).getValues().get(k).setMetricId(server.metrics.get(i).getId());
+                valueMapper.insert(server.metrics.get(i).getValues().get(k));
+            }
+        }
+    }
+
+    @Override
+    public void removeDetailById(Integer id) {
+        QueryWrapper<Metric> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("server_id", id);
+        List<Metric> metrics = metricMapper.selectList(queryWrapper);
+        for (int i = 0; i < metrics.size(); i++) {
+            Integer metricId = metrics.get(i).getId();
+            QueryWrapper<Label> queryWrapper1 = new QueryWrapper<>();
+            queryWrapper1.eq("metric_id", metricId);
+            List<Label> labels = labelMapper.selectList(queryWrapper1);
+            for (int j = 0; j < labels.size(); j++) {
+                labelMapper.deleteById(labels.get(j).getId());
+            }
+            QueryWrapper<Value> queryWrapper2 = new QueryWrapper<>();
+            queryWrapper2.eq("metric_id", metricId);
+            List<Value> values = valueMapper.selectList(queryWrapper2);
+            for (int k = 0; k < values.size(); k++) {
+                valueMapper.deleteById(values.get(k).getId());
+            }
+            metricMapper.deleteById(metricId);
+        }
+        serverMapper.deleteById(id);
+    }
+
+    @Override
+    public void updateDetailById(Integer id, Server server) {
+        log.info(server.toString());
+        server.setId(id);
+        serverMapper.updateById(server);
+        // remove old metrics
+        QueryWrapper<Metric> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("server_id", id);
+        List<Metric> metrics = metricMapper.selectList(queryWrapper);
+        for (int i = 0; i < metrics.size(); i++) {
+            Integer metricId = metrics.get(i).getId();
+            QueryWrapper<Label> queryWrapper1 = new QueryWrapper<>();
+            queryWrapper1.eq("metric_id", metricId);
+            List<Label> labels = labelMapper.selectList(queryWrapper1);
+            for (int j = 0; j < labels.size(); j++) {
+                labelMapper.deleteById(labels.get(j).getId());
+            }
+            QueryWrapper<Value> queryWrapper2 = new QueryWrapper<>();
+            queryWrapper2.eq("metric_id", metricId);
+            List<Value> values = valueMapper.selectList(queryWrapper2);
+            for (int k = 0; k < values.size(); k++) {
+                valueMapper.deleteById(values.get(k).getId());
+            }
+            metricMapper.deleteById(metricId);
+        }
+        // add new metrics
+        for (int i = 0; i < server.metrics.size(); i++) {
+            server.metrics.get(i).setServerId(server.getId());
+            server.metrics.get(i).setValueType(ValueTypeUntyped);
+            metricMapper.insert(server.metrics.get(i));
+            for (int j = 0; j < server.metrics.get(i).getLabels().size(); j++) {
+                server.metrics.get(i).getLabels().get(j).setMetricId(server.metrics.get(i).getId());
+                labelMapper.insert(server.metrics.get(i).getLabels().get(j));
+            }
+            for (int k = 0; k < server.metrics.get(i).getValues().size(); k++) {
+                server.metrics.get(i).getValues().get(k).setMetricId(server.metrics.get(i).getId());
+                valueMapper.insert(server.metrics.get(i).getValues().get(k));
+            }
+        }
+    }
+
+    @Override
     public ArrayList<Metric> getMetricsByServerID(Integer id) {
-        ArrayList<Metric> rst = new ArrayList<>();
         Server server = serverMapper.selectById(id);
         QueryWrapper<Metric> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("server_id", server.getId());

@@ -11,7 +11,6 @@ import com.example.json_exporter.service.ExporterServerService;
 import io.prometheus.client.Collector;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import static com.example.json_exporter.common.constant.ValueType.ValueTypeUntyp
 
 @Slf4j
 @Service
-@Qualifier("exporterServerService")
 public class ExporterServerServiceImpl extends ServiceImpl<ServerMapper, Server> implements ExporterServerService {
 
     @Autowired

@@ -2,10 +2,7 @@ package com.example.json_exporter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.json_exporter.mapper.LabelMapper;
-import com.example.json_exporter.mapper.MetricMapper;
-import com.example.json_exporter.mapper.ServerMapper;
-import com.example.json_exporter.mapper.ValueMapper;
+import com.example.json_exporter.mapper.*;
 import com.example.json_exporter.pojo.*;
 import com.example.json_exporter.service.ExporterServerService;
 import io.prometheus.client.Collector;
@@ -37,11 +34,19 @@ public class ExporterServerServiceImpl extends ServiceImpl<ServerMapper, Server>
     @Autowired
     private ValueMapper valueMapper;
 
+    @Autowired
+    private PreprocessMapper preprocessMapper;
+
     @Override
     public List<Server> listDetail() {
         QueryWrapper<Server> queryWrapper = new QueryWrapper<>();
         List<Server> servers = serverMapper.selectList(queryWrapper);
         for (int i = 0; i < servers.size(); i++) {
+            QueryWrapper<Preprocess> qw = new QueryWrapper<>();
+            qw.eq("server_id", servers.get(i).getId());
+            List<Preprocess> ps = preprocessMapper.selectList(qw);
+            servers.get(i).setPreprocesses(new ArrayList<>(ps));
+
             QueryWrapper<Metric> queryWrapper1 = new QueryWrapper<>();
             queryWrapper1.eq("server_id", servers.get(i).getId());
             List<Metric> metrics = metricMapper.selectList(queryWrapper1);
@@ -64,6 +69,10 @@ public class ExporterServerServiceImpl extends ServiceImpl<ServerMapper, Server>
     public void saveWithDetail(Server server) {
         serverMapper.insert(server);
         log.info(server.toString());
+        for (int index = 0; index < server.preprocesses.size(); index++) {
+            server.preprocesses.get(index).setServerId(server.getId());
+            preprocessMapper.insert(server.preprocesses.get(index));
+        }
         for (int i = 0; i < server.metrics.size(); i++) {
             server.metrics.get(i).setServerId(server.getId());
             server.metrics.get(i).setValueType(ValueTypeUntyped);
@@ -81,6 +90,13 @@ public class ExporterServerServiceImpl extends ServiceImpl<ServerMapper, Server>
 
     @Override
     public void removeDetailById(Integer id) {
+        QueryWrapper<Preprocess> qw = new QueryWrapper<>();
+        qw.eq("server_id", id);
+        List<Preprocess> ps = preprocessMapper.selectList(qw);
+        for (int index = 0; index < ps.size();index++) {
+            Integer pid = ps.get(index).getId();
+            preprocessMapper.deleteById(pid);
+        }
         QueryWrapper<Metric> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("server_id", id);
         List<Metric> metrics = metricMapper.selectList(queryWrapper);
@@ -108,6 +124,19 @@ public class ExporterServerServiceImpl extends ServiceImpl<ServerMapper, Server>
         log.info(server.toString());
         server.setId(id);
         serverMapper.updateById(server);
+        // remove old preprocesses
+        QueryWrapper<Preprocess> qw = new QueryWrapper<>();
+        qw.eq("server_id", id);
+        List<Preprocess> ps = preprocessMapper.selectList(qw);
+        for (int index = 0; index < ps.size();index++) {
+            Integer pid = ps.get(index).getId();
+            preprocessMapper.deleteById(pid);
+        }
+        // add new preprocesses
+        for (int index = 0; index < server.preprocesses.size(); index++) {
+            server.preprocesses.get(index).setServerId(server.getId());
+            preprocessMapper.insert(server.preprocesses.get(index));
+        }
         // remove old metrics
         QueryWrapper<Metric> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("server_id", id);
@@ -168,6 +197,14 @@ public class ExporterServerServiceImpl extends ServiceImpl<ServerMapper, Server>
     public ArrayList<JSONMetric> getJSONMetricsByServerID(Integer id) {
         ArrayList<Metric> metrics = this.getMetricsByServerID(id);
         return this.convertMetricsToJSONMetrics(metrics);
+    }
+
+    @Override
+    public ArrayList<Preprocess> getPreprocessesByServerID(Integer id) {
+        QueryWrapper<Preprocess> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("server_id", id);
+        List<Preprocess> ps = preprocessMapper.selectList(queryWrapper);
+        return new ArrayList<>(ps);
     }
 
     public ArrayList<JSONMetric> convertMetricsToJSONMetrics(ArrayList<Metric> metrics) {

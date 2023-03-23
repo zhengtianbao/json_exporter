@@ -103,6 +103,13 @@ public class ServerMetricCollector extends Collector{
     }
 
     public double SanitizeValue(String s) {
+        // jsonpath在使用filter过滤后产生的列表无法通过index获取元素
+        // $.resourceSecondsMap.entry[?(@.key == "memory-mb")][0].value // 这样的语法是不支持的
+        // $.resourceSecondsMap.entry[?(@.key == "memory-mb")].value // 只能这样
+        // 返回结果为 ["200268"]
+        if (s.startsWith("[")) {
+            s = s.replace("[", "").replace("]", "").replace("\"", "");
+        }
         double rst;
         try {
             rst = Double.parseDouble(s);

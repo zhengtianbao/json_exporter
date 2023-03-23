@@ -3,9 +3,11 @@ package com.example.json_exporter.controller;
 import com.example.json_exporter.exporter.MetricExporter;
 import com.example.json_exporter.metrics.ServerMetricCollector;
 import com.example.json_exporter.pojo.JSONMetric;
+import com.example.json_exporter.pojo.Preprocess;
 import com.example.json_exporter.pojo.Server;
 import com.example.json_exporter.service.ExporterServerService;
 import com.example.json_exporter.service.FetcherService;
+import com.example.json_exporter.util.XmlConverter;
 import io.prometheus.client.exporter.common.TextFormat;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -75,9 +77,20 @@ public class JsonExportMetricController {
         MetricExporter exporter = new MetricExporter();
         Server server = exporterServerService.getById(serverId);
         log.info(server.toString());
-        String jsonData = fetcherService.fetch(server.getUrl());
+        String data = fetcherService.fetch(server.getUrl());
+        ArrayList<Preprocess> ps = exporterServerService.getPreprocessesByServerID(serverId);
+        if (!ps.isEmpty()) {
+            for (Preprocess p: ps) {
+                switch(p.getName()){
+                    case "xmlconvert":
+                        data = XmlConverter.toJSON(data);
+                    default:
+                }
+            }
+        }
+        log.info(data);
         ArrayList<JSONMetric> jmetrics = exporterServerService.getJSONMetricsByServerID(serverId);
-        exporter.register(new ServerMetricCollector(jsonData, jmetrics));
+        exporter.register(new ServerMetricCollector(data, jmetrics));
         String response = exporter.writeRegistry();
         return ResponseEntity.ok().header(CONTENT_TYPE, TextFormat.CONTENT_TYPE_004).body(response);
     }

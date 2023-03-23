@@ -24,6 +24,10 @@ public class Server {
     /** 服务暴露的指标地址 */
     public String url;
 
+    /** 预处理 */
+    @TableField(exist = false)
+    public ArrayList<Preprocess> preprocesses;
+
     /** 需要抓取的指标 */
     @TableField(exist = false)
     public ArrayList<Metric> metrics;

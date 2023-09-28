@@ -11,7 +11,8 @@ RUN set -ex \
     && echo "start" > /dev/null
 COPY deploy/docker/entrypoint.sh .
 COPY web/nginx.conf /etc/nginx/conf.d/nginx.conf
-COPY build/ /usr/share/nginx/html/
+COPY server/src/main/resources/json_exporter.sql /opt/json_exporter.sql
+COPY build/ /usr/share/nginx/html/json_exporter
 RUN chmod +x ./entrypoint.sh
 EXPOSE 80
 ENTRYPOINT ["./entrypoint.sh"]

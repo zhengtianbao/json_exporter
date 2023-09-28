@@ -1,32 +1,21 @@
-# json_exporter
+# server
 
-转换http服务暴露的任意json结构数据为prometheus格式的metrics指标，同时暴露对应endpoint用于prometheus采集。
+[json_exporter](https://github.com/zhengtianbao/json_exporter) 后端服务
 
-前端项目地址: [json_exporter_frontend](https://github.com/zhengtianbao/json_exporter_frontend)
+## Requirements
+
+- java 11
 
 ## Build
 
 ```shell
-./mvnw package 
+./mvnw install
 ```
 
 ## Run
 
 ```shell
 java -jar target/json_exporter:0.0.1-SNAPSHOT.jar
-```
-
-## Docker
-
-```shell
-docker build -t json_exporter:0.0.1-SNAPSHOT .
-# or
-./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=json_exporter
-```
-
-
-```shell
-docker run -p 8080:8080 json_exporter:0.0.1-SNAPSHOT
 ```
 
 ## 数据库初始化
@@ -36,7 +25,7 @@ docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=123456 -v /mysqldata:/var/lib/
 ```
 
 ```sql
-create database prometheus DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci;
-use prometheus;
-source src/main/resources/prometheus.sql
+create database json_exporter DEFAULT CHARSET utf8mb4;
+use json_exporter;
+source src/main/resources/json_exporter.sql
 ```

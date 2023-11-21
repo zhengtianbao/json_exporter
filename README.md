@@ -16,5 +16,5 @@
 make image
 
 # run
-docker -d --name json_exporter -p8080:80 zhengtianbao/json_exporter:latest
+docker run -d --name json_exporter -p8080:80 zhengtianbao/json_exporter:latest
 ```

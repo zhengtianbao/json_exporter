@@ -59,6 +59,21 @@ CREATE TABLE `metric` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `header`
+--
+
+DROP TABLE IF EXISTS `header`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `header` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `value` varchar(100) DEFAULT NULL,
+  `server_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `preprocess`
 --
 

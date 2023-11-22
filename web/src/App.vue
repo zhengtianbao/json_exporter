@@ -44,6 +44,17 @@
           <el-form-item label="URL">
             <el-input v-model="newServerFormData.url"></el-input>
           </el-form-item>
+          <el-form-item
+            v-for="(header, index) in newServerFormData.headers"
+            :label="'header' + index"
+            :key="header.key"
+            :prop="'headers.' + index + '.value'"
+            :rules="{
+              required: true, message: 'header不能为空', trigger: 'blur'
+            }"
+          >
+            <el-input placeholder="Appect: Application/json" v-model="header.value"></el-input><el-button @click.prevent="removeHeaderAtNewServerForm(header)">删除</el-button>
+          </el-form-item>
           <div class="preprocesses" style="margin-left: 50px;">
             <div>数据预处理</div>
             <div v-for="(preprocess, index) in newServerFormData.preprocesses" style="border-style: solid;">
@@ -114,6 +125,7 @@
           </div>
         </el-form>
         <div slot="footer" class="dialog-footer">
+          <el-button @click="addHeaderClick">新增自定义请求头</el-button>
           <el-button @click="addPreprocessClick">新增预处理步骤</el-button>
           <el-button @click="addServerMetricClick">新增Metric</el-button>
           <el-button @click="newServerFormCancel">取 消</el-button>
@@ -131,6 +143,17 @@
           </el-form-item>
           <el-form-item label="URL">
             <el-input v-model="editServerFormData.url"></el-input>
+          </el-form-item>
+          <el-form-item
+            v-for="(header, index) in editServerFormData.headers"
+            :label="'header' + index"
+            :key="header.key"
+            :prop="'headers.' + index + '.value'"
+            :rules="{
+              required: true, message: 'header不能为空', trigger: 'blur'
+            }"
+          >
+            <el-input placeholder="Appect: Application/json" v-model="header.value"></el-input><el-button @click.prevent="removeHeaderAtEditServerForm(header)">删除</el-button>
           </el-form-item>
           <div class="preprocesses" style="margin-left: 50px;">
             <div>数据预处理</div>
@@ -195,6 +218,7 @@
           </div>
         </el-form>
         <div slot="footer" class="dialog-footer">
+          <el-button @click="addHeaderAtEditServerFormClick">新增自定义请求头</el-button>
           <el-button @click="addPreprocessAtEditServerFormClick">新增预处理步骤</el-button>
           <el-button @click="addServerMetricAtEditServerFormClick">新增Metric</el-button>
           <el-button @click="editServerFormCancel">取 消</el-button>
@@ -302,6 +326,7 @@ export default {
       JSONPathEvaluatorEndpoint: '/jsonpath/index.html',
       newServerDialogVisible: false,
       newServerFormData: {
+        headers: [],
         preprocesses: [],
         metrics: [],
       },
@@ -312,6 +337,7 @@ export default {
       serversData: [],
       editServerDialogVisible: false,
       editServerFormData: {
+        headers: [],
         preprocesses: [],
         metrics: [],
       }
@@ -331,6 +357,20 @@ export default {
     serverAddClick() {
       this.newServerDialogVisible = true;
     },
+    addHeaderClick() {
+      this.newServerFormData.headers.push({
+        value: '',
+        key: Date.now()
+      });
+      this.$forceUpdate();
+    },
+    removeHeaderAtNewServerForm(item) {
+      var index = this.newServerFormData.headers.indexOf(item)
+      if (index !== -1) {
+        this.newServerFormData.headers.splice(index, 1)
+      }
+      this.$forceUpdate();
+    },
     addPreprocessClick() {
       this.newServerFormData.preprocesses.push({name: 'xmlconvert'});
       this.$forceUpdate();
@@ -340,6 +380,7 @@ export default {
       if (index !== -1){
         this.newServerFormData.preprocesses.splice(index, 1);
       }
+      this.$forceUpdate();
     },
     addServerMetricClick() {
       this.newServerFormData.metrics.push({type: "value", labels: [], values: []});
@@ -350,6 +391,7 @@ export default {
       if (index !== -1) {
         this.newServerFormData.metrics.splice(index, 1);
       }
+      this.$forceUpdate();
     },
     addMetricLabelAtNewServerForm(item) {
       let index = this.newServerFormData.metrics.indexOf(item);
@@ -422,6 +464,21 @@ export default {
       this.editServerFormData = server;
       this.editServerDialogVisible = true;
     },
+    addHeaderAtEditServerFormClick() {
+      console.log("##########")
+      console.log(this.editServerFormData)
+      this.editServerFormData.headers.push({
+        value: '',
+        key: Date.now()
+      });
+      this.$forceUpdate();
+    },
+    removeHeaderAtEditServerForm(item) {
+      var index = this.editServerFormData.headers.indexOf(item)
+      if (index !== -1) {
+        this.editServerFormData.headers.splice(index, 1)
+      }
+    },
     addPreprocessAtEditServerFormClick() {
       this.editServerFormData.preprocesses.push({name: "xmlconvert"});
       this.$forceUpdate();
@@ -441,6 +498,7 @@ export default {
       if (index !== -1) {
         this.editServerFormData.metrics.splice(index, 1);
       }
+      this.$forceUpdate();
     },
     addMetricLabelAtEditServerForm(item) {
       let index = this.editServerFormData.metrics.indexOf(item);

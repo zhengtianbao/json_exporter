@@ -298,8 +298,7 @@ export default {
   },
   data() {
     return {
-      backendEndpoint: '/backend',
-      // backendEndpoint: 'http://localhost:8080',
+      backendEndpoint: process.env.VUE_APP_BASE_URL,
       JSONPathEvaluatorEndpoint: '/jsonpath/index.html',
       newServerDialogVisible: false,
       newServerFormData: {

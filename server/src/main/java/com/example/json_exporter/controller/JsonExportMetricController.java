@@ -2,6 +2,7 @@ package com.example.json_exporter.controller;
 
 import com.example.json_exporter.exporter.MetricExporter;
 import com.example.json_exporter.metrics.ServerMetricCollector;
+import com.example.json_exporter.pojo.Header;
 import com.example.json_exporter.pojo.JSONMetric;
 import com.example.json_exporter.pojo.Preprocess;
 import com.example.json_exporter.pojo.Server;
@@ -51,7 +52,6 @@ public class JsonExportMetricController {
     @ApiOperation(value = "增加Server信息")
     @PostMapping("server")
     public ResponseEntity<Object> addServer(@RequestBody Server server) {
-        log.info(server.toString());
         exporterServerService.saveWithDetail(server);
         return new ResponseEntity<>("Server is created successfully", HttpStatus.CREATED);
     }
@@ -76,8 +76,8 @@ public class JsonExportMetricController {
     public ResponseEntity<Object> metrics(@RequestParam Integer serverId) {
         MetricExporter exporter = new MetricExporter();
         Server server = exporterServerService.getById(serverId);
-        log.info(server.toString());
-        String data = fetcherService.fetch(server.getUrl());
+        ArrayList<Header> headers = exporterServerService.getHeadersByServerID(serverId);
+        String data = fetcherService.fetch(server.getUrl(), headers);
         ArrayList<Preprocess> ps = exporterServerService.getPreprocessesByServerID(serverId);
         if (!ps.isEmpty()) {
             for (Preprocess p: ps) {

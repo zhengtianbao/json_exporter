@@ -1,10 +1,7 @@
 package com.example.json_exporter.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.json_exporter.pojo.JSONMetric;
-import com.example.json_exporter.pojo.Metric;
-import com.example.json_exporter.pojo.Preprocess;
-import com.example.json_exporter.pojo.Server;
+import com.example.json_exporter.pojo.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +19,8 @@ public interface ExporterServerService extends IService<Server> {
     void updateDetailById(Integer id, Server server);
 
     ArrayList<JSONMetric> getJSONMetricsByServerID(Integer id);
+
+    ArrayList<Header> getHeadersByServerID(Integer id);
 
     ArrayList<Preprocess> getPreprocessesByServerID(Integer id);
 }

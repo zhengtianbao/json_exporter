@@ -26,6 +26,9 @@ public class ExporterServerServiceImpl extends ServiceImpl<ServerMapper, Server>
     private ServerMapper serverMapper;
 
     @Autowired
+    private HeaderMapper headerMapper;
+
+    @Autowired
     private MetricMapper metricMapper;
 
     @Autowired
@@ -42,6 +45,11 @@ public class ExporterServerServiceImpl extends ServiceImpl<ServerMapper, Server>
         QueryWrapper<Server> queryWrapper = new QueryWrapper<>();
         List<Server> servers = serverMapper.selectList(queryWrapper);
         for (int i = 0; i < servers.size(); i++) {
+            QueryWrapper<Header> hqw = new QueryWrapper<>();
+            hqw.eq("server_id", servers.get(i).getId());
+            List<Header> headers = headerMapper.selectList(hqw);
+            servers.get(i).setHeaders(new ArrayList<>(headers));
+
             QueryWrapper<Preprocess> qw = new QueryWrapper<>();
             qw.eq("server_id", servers.get(i).getId());
             List<Preprocess> ps = preprocessMapper.selectList(qw);
@@ -68,7 +76,12 @@ public class ExporterServerServiceImpl extends ServiceImpl<ServerMapper, Server>
     @Override
     public void saveWithDetail(Server server) {
         serverMapper.insert(server);
+        log.info("Insert new server");
         log.info(server.toString());
+        for (int index = 0; index < server.headers.size(); index++) {
+            server.headers.get(index).setServerId(server.getId());
+            headerMapper.insert(server.headers.get(index));
+        }
         for (int index = 0; index < server.preprocesses.size(); index++) {
             server.preprocesses.get(index).setServerId(server.getId());
             preprocessMapper.insert(server.preprocesses.get(index));
@@ -90,10 +103,17 @@ public class ExporterServerServiceImpl extends ServiceImpl<ServerMapper, Server>
 
     @Override
     public void removeDetailById(Integer id) {
+        QueryWrapper<Header> hqw = new QueryWrapper<>();
+        hqw.eq("server_id", id);
+        List<Header> headers = headerMapper.selectList(hqw);
+        for (int index = 0; index < headers.size(); index++) {
+            Integer hid = headers.get(index).getId();
+            headerMapper.deleteById(hid);
+        }
         QueryWrapper<Preprocess> qw = new QueryWrapper<>();
         qw.eq("server_id", id);
         List<Preprocess> ps = preprocessMapper.selectList(qw);
-        for (int index = 0; index < ps.size();index++) {
+        for (int index = 0; index < ps.size(); index++) {
             Integer pid = ps.get(index).getId();
             preprocessMapper.deleteById(pid);
         }
@@ -124,6 +144,19 @@ public class ExporterServerServiceImpl extends ServiceImpl<ServerMapper, Server>
         log.info(server.toString());
         server.setId(id);
         serverMapper.updateById(server);
+        // remove old headers
+        QueryWrapper<Header> hqw = new QueryWrapper<>();
+        hqw.eq("server_id", id);
+        List<Header> headers = headerMapper.selectList(hqw);
+        for (int index = 0; index < headers.size(); index++) {
+            Integer hid = headers.get(index).getId();
+            headerMapper.deleteById(hid);
+        }
+        // add new headers
+        for (int index = 0; index < server.headers.size(); index++) {
+            server.headers.get(index).setServerId(server.getId());
+            headerMapper.insert(server.headers.get(index));
+        }
         // remove old preprocesses
         QueryWrapper<Preprocess> qw = new QueryWrapper<>();
         qw.eq("server_id", id);
@@ -197,6 +230,13 @@ public class ExporterServerServiceImpl extends ServiceImpl<ServerMapper, Server>
     public ArrayList<JSONMetric> getJSONMetricsByServerID(Integer id) {
         ArrayList<Metric> metrics = this.getMetricsByServerID(id);
         return this.convertMetricsToJSONMetrics(metrics);
+    }
+
+    public ArrayList<Header> getHeadersByServerID(Integer id) {
+        QueryWrapper<Header> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("server_id", id);
+        List<Header> headers = headerMapper.selectList(queryWrapper);
+        return new ArrayList<>(headers);
     }
 
     @Override

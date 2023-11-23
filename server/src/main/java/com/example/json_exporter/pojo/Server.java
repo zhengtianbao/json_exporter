@@ -24,6 +24,10 @@ public class Server {
     /** 服务暴露的指标地址 */
     public String url;
 
+    /** 请求头参数 */
+    @TableField(exist = false)
+    public ArrayList<Header> headers;
+
     /** 预处理 */
     @TableField(exist = false)
     public ArrayList<Preprocess> preprocesses;

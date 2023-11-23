@@ -11,10 +11,30 @@
 
 ## Build
 
-```shell
-# 构建all-in-one镜像
-make image
+构建all-in-one Jar 包
 
-# run
-docker run -d --name json_exporter -p8080:80 zhengtianbao/json_exporter:latest
+```shell
+cd web 
+npm run build
+cp -r dist index.html server/src/main/resources/static/
+cd ../server
+./mvnw package
+```
+
+## run
+
+```shell
+cd server/target
+java -jar json_exporter-0.0.1-SNAPSHOT.jar
+```
+
+## 启动修改配置
+
+在json_exporter-0.0.1-SNAPSHOT.jar同级目录下新建application.yml
+
+例如修改服务端口：
+
+```yaml
+server:
+  port: 8080
 ```

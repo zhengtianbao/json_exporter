@@ -24,7 +24,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @CrossOrigin
 @ApiOperation(value = "json_exporter接口")
-@RequestMapping("/exporter")
+@RequestMapping("/backend/exporter")
 @RestController
 @Slf4j
 public class JsonExportMetricController {

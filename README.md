@@ -16,7 +16,7 @@
 ```shell
 cd web 
 npm run build
-cp -r dist index.html server/src/main/resources/static/
+cp -r jsonpath dist index.html server/src/main/resources/static/
 cd ../server
 ./mvnw package
 ```

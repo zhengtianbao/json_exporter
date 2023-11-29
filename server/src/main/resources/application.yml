@@ -8,6 +8,11 @@ spring:
     username: root
     password: 123456
 
+mecury:
+  tokenUrl: http://12.99.208.216:9777/client/tokenByPwd
+  tokenClientID: prometheus-manage
+  tokenSecret: uie1nk
+
 mybatis-plus:
   # 支持统配符 * 或者 ; 分割
   typeEnumsPackage: com.example.json_exporter.common.constant

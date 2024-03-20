@@ -6,7 +6,7 @@
 
 ## Requirements
 
-- nodejs v6.11.5
+- nodejs v6.17.1
 
 ## Build Setup
 

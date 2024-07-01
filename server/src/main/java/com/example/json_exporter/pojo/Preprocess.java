@@ -13,5 +13,7 @@ public class Preprocess {
 
     public String name;
 
+    public String script;
+
     public Integer serverId;
 }

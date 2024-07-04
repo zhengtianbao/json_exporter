@@ -9,6 +9,7 @@ import com.example.json_exporter.pojo.Server;
 import com.example.json_exporter.service.ExporterServerService;
 import com.example.json_exporter.service.FetcherService;
 import com.example.json_exporter.util.XmlConverter;
+import com.example.json_exporter.util.JavaScriptConverter;
 import io.prometheus.client.exporter.common.TextFormat;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @CrossOrigin
 @ApiOperation(value = "json_exporter接口")
-@RequestMapping("/exporter")
+@RequestMapping("/backend/exporter")
 @RestController
 @Slf4j
 public class JsonExportMetricController {
@@ -58,7 +59,7 @@ public class JsonExportMetricController {
 
     @ApiOperation(value = "删除Server信息")
     @DeleteMapping("server/{id}")
-    public ResponseEntity<Object> deleteServer(@PathVariable("id") Integer id){
+    public ResponseEntity<Object> deleteServer(@PathVariable("id") Integer id) {
         exporterServerService.removeDetailById(id);
         return new ResponseEntity<>("Server is deleted successfully", HttpStatus.OK);
     }
@@ -80,10 +81,12 @@ public class JsonExportMetricController {
         String data = fetcherService.fetch(server.getUrl(), headers);
         ArrayList<Preprocess> ps = exporterServerService.getPreprocessesByServerID(serverId);
         if (!ps.isEmpty()) {
-            for (Preprocess p: ps) {
-                switch(p.getName()){
+            for (Preprocess p : ps) {
+                switch (p.getName()) {
                     case "xmlconvert":
                         data = XmlConverter.toJSON(data);
+                    case "jsconvert":
+                        data = JavaScriptConverter.toJSON(data, p.getScript());
                     default:
                 }
             }

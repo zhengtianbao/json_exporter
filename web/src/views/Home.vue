@@ -1,4 +1,5 @@
 <template>
+
   <div>
     <!-- 服务列表 -->
     <div>
@@ -59,9 +60,13 @@
             <div>数据预处理</div>
             <div v-for="(preprocess, index) in newServerFormData.preprocesses" style="border-style: solid;">
               <el-form-item label="类型">
-                <el-select v-model="preprocess.name" placeholder="请选择预处理类型">
+                <el-select v-model="preprocess.name" placeholder="请选择预处理类型" @change="newServerFormPreprocessSelectChange(preprocess.name, index)">
                   <el-option label="xml转json" value="xmlconvert"></el-option>
+                  <el-option label="javascript脚本" value="jsconvert"></el-option>
                 </el-select>
+                <div v-show="preprocess.name == 'jsconvert'">
+                  <textarea id="newCodeMirrorEditor" v-model="preprocess.script" style="height:200px;width:600px;"/>
+                </div>
               </el-form-item>
               <el-button @click.prevent="removePreprocessAtNewServerForm(preprocess)">删除预处理步骤</el-button>
             </div>
@@ -159,9 +164,13 @@
             <div>数据预处理</div>
             <div v-for="(preprocess, index) in editServerFormData.preprocesses" style="border-style: solid;">
               <el-form-item label="类型">
-                <el-select v-model="preprocess.name" placeholder="请选择预处理类型">
+                <el-select v-model="preprocess.name" placeholder="请选择预处理类型" @change="editServerFormPreprocessSelectChange(preprocess.name, index)">
                   <el-option label="xml转json" value="xmlconvert"></el-option>
+                  <el-option label="javascript脚本" value="jsconvert"></el-option>
                 </el-select>
+                <div v-show="preprocess.name == 'jsconvert'">
+                  <textarea id="editCodeMirrorEditor" v-model="preprocess.script" style="height:200px;width:600px;"/>
+                </div>
               </el-form-item>
               <el-button @click.prevent="removePreprocessAtEditServerForm(preprocess)">删除预处理步骤</el-button>
             </div>
@@ -315,6 +324,11 @@
 <script>
 import axios from 'axios'
 
+let skeleton = `function modify(origin) {
+  var obj = JSON.parse(origin);
+  return JSON.stringify(obj);
+}`
+
 export default {
   name: 'home',
   mounted() {
@@ -345,6 +359,16 @@ export default {
     }
   },
   methods: {
+    newServerFormPreprocessSelectChange(name, index){
+      console.log(name)
+      console.log(index)
+      console.log(this.newServerFormData.preprocesses)
+    },
+    editServerFormPreprocessSelectChange(name, index){
+      console.log(name)
+      console.log(index)
+      console.log(this.editServerFormData.preprocesses)
+    },
     checkLogin() {
       if (!window.sessionStorage.getItem("isLogin")) {
         this.$router.push({name: 'Login'})
@@ -378,7 +402,7 @@ export default {
       this.$forceUpdate();
     },
     addPreprocessClick() {
-      this.newServerFormData.preprocesses.push({name: 'xmlconvert'});
+      this.newServerFormData.preprocesses.push({name: 'jsconvert', script: skeleton});
       this.$forceUpdate();
     },
     removePreprocessAtNewServerForm(item) {
@@ -486,7 +510,7 @@ export default {
       }
     },
     addPreprocessAtEditServerFormClick() {
-      this.editServerFormData.preprocesses.push({name: "xmlconvert"});
+      this.editServerFormData.preprocesses.push({name: "jsconvert", script: skeleton});
       this.$forceUpdate();
     },
     removePreprocessAtEditServerForm(item) {

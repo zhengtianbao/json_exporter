@@ -83,6 +83,7 @@ DROP TABLE IF EXISTS `preprocess`;
 CREATE TABLE `preprocess` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) DEFAULT NULL,
+  `script` text DEFAULT NULL,
   `server_id` int DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;

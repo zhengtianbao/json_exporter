@@ -2,7 +2,6 @@ package com.example.json_exporter.service.impl;
 
 import com.example.json_exporter.pojo.Header;
 import com.example.json_exporter.service.FetcherService;
-import com.example.json_exporter.util.CacheHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -27,23 +26,16 @@ public class FetcherServiceImpl implements FetcherService {
     @Override
     public String fetch(String url, ArrayList<Header> headers) {
         HttpHeaders hs = new HttpHeaders();
-        if(headers.isEmpty()) {
-            // 没有自定义header的情况下设置水星服务token
-            hs.set("x-client-token", CacheHelper.codeMap.get("token"));
-        } else {
-            for (int i=0; i<headers.size(); i++) {
-                String[] parts = headers.get(i).getValue().split(":");
-                hs.set(parts[0].trim(), parts[1].trim());
-            }
+        for (int i = 0; i < headers.size(); i++) {
+            String[] parts = headers.get(i).getValue().split(":");
+            hs.set(parts[0].trim(), parts[1].trim());
         }
-
         HttpEntity request = new HttpEntity(hs);
         ResponseEntity<String> response = this.restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 request,
-                String.class
-        );
+                String.class);
         return response.getBody();
     }
 }

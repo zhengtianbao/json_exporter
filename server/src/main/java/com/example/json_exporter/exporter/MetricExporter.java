@@ -3,13 +3,11 @@ package com.example.json_exporter.exporter;
 import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.common.TextFormat;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
-@Slf4j
 public class MetricExporter {
     private final CollectorRegistry collectorRegistry = new CollectorRegistry();
 

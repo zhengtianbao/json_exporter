@@ -2,7 +2,6 @@ package com.example.json_exporter.service.impl;
 
 import com.example.json_exporter.pojo.Header;
 import com.example.json_exporter.service.FetcherService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,7 +12,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 
-@Slf4j
 @Service
 public class FetcherServiceImpl implements FetcherService {
 
@@ -30,7 +28,7 @@ public class FetcherServiceImpl implements FetcherService {
             String[] parts = headers.get(i).getValue().split(":");
             hs.set(parts[0].trim(), parts[1].trim());
         }
-        HttpEntity request = new HttpEntity(hs);
+        HttpEntity<HttpHeaders> request = new HttpEntity<HttpHeaders>(hs);
         ResponseEntity<String> response = this.restTemplate.exchange(
                 url,
                 HttpMethod.GET,

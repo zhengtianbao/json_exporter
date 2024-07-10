@@ -1,5 +1,6 @@
 package com.example.json_exporter.pojo;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -23,6 +24,12 @@ public class Server {
 
     /** 服务暴露的指标地址 */
     public String url;
+
+    /** 请求方式 */
+    public String method;
+
+    /** 请求体内容 */
+    public String body;
 
     /** 请求头参数 */
     @TableField(exist = false)

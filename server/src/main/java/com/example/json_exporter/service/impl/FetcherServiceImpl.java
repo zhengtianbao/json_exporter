@@ -1,6 +1,7 @@
 package com.example.json_exporter.service.impl;
 
 import com.example.json_exporter.pojo.Header;
+import com.example.json_exporter.pojo.Server;
 import com.example.json_exporter.service.FetcherService;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -22,16 +23,17 @@ public class FetcherServiceImpl implements FetcherService {
     }
 
     @Override
-    public String fetch(String url, ArrayList<Header> headers) {
+    public String fetch(Server server, ArrayList<Header> headers) {
         HttpHeaders hs = new HttpHeaders();
         for (int i = 0; i < headers.size(); i++) {
             String[] parts = headers.get(i).getValue().split(":");
             hs.set(parts[0].trim(), parts[1].trim());
         }
-        HttpEntity<HttpHeaders> request = new HttpEntity<HttpHeaders>(hs);
+        String requestBody = server.getBody();
+        HttpEntity<String> request = new HttpEntity<>(requestBody, hs);
         ResponseEntity<String> response = this.restTemplate.exchange(
-                url,
-                HttpMethod.GET,
+                server.getUrl(),
+                HttpMethod.valueOf(server.getMethod()),
                 request,
                 String.class);
         return response.getBody();

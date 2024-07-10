@@ -45,6 +45,18 @@
           <el-form-item label="URL">
             <el-input v-model="newServerFormData.url"></el-input>
           </el-form-item>
+          <el-form-item label="Method">
+            <el-radio v-model="newServerFormData.method" label="GET">GET</el-radio>
+            <el-radio v-model="newServerFormData.method" label="POST">POST</el-radio>
+          </el-form-item>
+          <div v-if="newServerFormData.method == 'POST'">
+            <el-input
+              type="textarea"
+              :rows="4"
+              placeholder="请输入请求Body"
+              v-model="newServerFormData.body">
+            </el-input>
+          </div>
           <el-form-item
             v-for="(header, index) in newServerFormData.headers"
             :label="'header' + index"
@@ -149,6 +161,18 @@
           <el-form-item label="URL">
             <el-input v-model="editServerFormData.url"></el-input>
           </el-form-item>
+          <el-form-item label="Method">
+            <el-radio v-model="editServerFormData.method" label="GET">GET</el-radio>
+            <el-radio v-model="editServerFormData.method" label="POST">POST</el-radio>
+          </el-form-item>
+          <div v-if="editServerFormData.method == 'POST'">
+            <el-input
+              type="textarea"
+              :rows="4"
+              placeholder="请输入请求Body"
+              v-model="editServerFormData.body">
+            </el-input>
+          </div>
           <el-form-item
             v-for="(header, index) in editServerFormData.headers"
             :label="'header' + index"
@@ -342,6 +366,8 @@ export default {
       newServerDialogVisible: false,
       newServerFormData: {
         headers: [],
+        method: "GET",
+        body: "",
         preprocesses: [],
         metrics: [],
       },
@@ -353,6 +379,8 @@ export default {
       editServerDialogVisible: false,
       editServerFormData: {
         headers: [],
+        method: "GET",
+        body: "",
         preprocesses: [],
         metrics: [],
       }

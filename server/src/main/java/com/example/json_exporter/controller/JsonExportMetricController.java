@@ -78,7 +78,7 @@ public class JsonExportMetricController {
         MetricExporter exporter = new MetricExporter();
         Server server = exporterServerService.getById(serverId);
         ArrayList<Header> headers = exporterServerService.getHeadersByServerID(serverId);
-        String data = fetcherService.fetch(server.getUrl(), headers);
+        String data = fetcherService.fetch(server, headers);
         ArrayList<Preprocess> ps = exporterServerService.getPreprocessesByServerID(serverId);
         if (!ps.isEmpty()) {
             for (Preprocess p : ps) {

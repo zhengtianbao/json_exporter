@@ -100,6 +100,8 @@ CREATE TABLE `server` (
   `id` int NOT NULL AUTO_INCREMENT,
   `url` varchar(200) CHARACTER SET utf8mb4 DEFAULT NULL,
   `name` varchar(100) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `method` varchar(100) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `body` text CHARACTER SET utf8mb4 DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COMMENT='需要抓取的服务信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;

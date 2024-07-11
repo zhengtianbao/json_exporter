@@ -9,7 +9,7 @@
 ## Build
 
 ```shell
-./mvnw install
+./mvnw package -DskipTests
 ```
 
 ## Run

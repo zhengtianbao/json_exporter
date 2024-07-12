@@ -499,7 +499,13 @@ export default {
     },
     newServerFormCancel() {
       this.newServerDialogVisible = false;
-      this.newServerFormData = {metrics: []};
+      this.newServerFormData = {
+        headers: [],
+        method: "GET",
+        body: "",
+        preprocesses: [],
+        metrics: [],
+      };
     },
     newServerFormSubmit() {
       console.log(this.newServerFormData);
@@ -515,7 +521,13 @@ export default {
       })
       // reset form data
       this.newServerDialogVisible = false;
-      this.newServerFormData = {metrics: []};
+      this.newServerFormData = {
+        headers: [],
+        method: "GET",
+        body: "",
+        preprocesses: [],
+        metrics: [],
+      };
     },
     // 修改表单方法 //
     serverEditClick(server) {
@@ -606,7 +618,13 @@ export default {
     },
     editServerFormCancel() {
       this.editServerDialogVisible = false;
-      this.editServerFormData = {metrics: []};
+      this.editServerFormData = {
+        headers: [],
+        method: "GET",
+        body: "",
+        preprocesses: [],
+        metrics: [],
+      };
     },
     editServerFormSubmit() {
       console.log(this.editServerFormData);
@@ -622,7 +640,13 @@ export default {
       })
       // reset form data
       this.editServerDialogVisible = false;
-      this.editServerFormData = {metrics: []};
+      this.editServerFormData = {
+        headers: [],
+        method: "GET",
+        body: "",
+        preprocesses: [],
+        metrics: [],
+      };
     },
     // 查看方法 //
     preprocessViewClick(server) {

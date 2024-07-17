@@ -1,9 +1,7 @@
 package com.example.json_exporter.service.impl;
 
-import com.example.json_exporter.pojo.Header;
-import com.example.json_exporter.pojo.Server;
-import com.example.json_exporter.service.FetcherService;
-import com.example.json_exporter.util.CacheHelper;
+import java.util.ArrayList;
+
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,7 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
+import com.example.json_exporter.pojo.Header;
+import com.example.json_exporter.pojo.Server;
+import com.example.json_exporter.service.FetcherService;
+import com.example.json_exporter.util.CacheHelper;
 
 @Service
 public class FetcherServiceImpl implements FetcherService {
@@ -24,7 +25,7 @@ public class FetcherServiceImpl implements FetcherService {
     }
 
     @Override
-    public String fetch(Server server, ArrayList<Header> headers) {
+    public String fetch(Server server, ArrayList<Header> headers) throws Exception {
         HttpHeaders hs = new HttpHeaders();
         if (headers.isEmpty()) {
             // 没有自定义header的情况下设置水星服务token
@@ -37,12 +38,19 @@ public class FetcherServiceImpl implements FetcherService {
         }
 
         String requestBody = server.getBody();
+        ResponseEntity<String> response;
         HttpEntity<String> request = new HttpEntity<>(requestBody, hs);
-        ResponseEntity<String> response = this.restTemplate.exchange(
-                server.getUrl(),
-                HttpMethod.valueOf(server.getMethod()),
-                request,
-                String.class);
+        try {
+            response = this.restTemplate.exchange(
+                    server.getUrl(),
+                    HttpMethod.valueOf(server.getMethod()),
+                    request,
+                    String.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
         return response.getBody();
     }
 }

@@ -1,10 +1,10 @@
 package com.example.json_exporter.service;
 
+import java.util.ArrayList;
+
 import com.example.json_exporter.pojo.Header;
 import com.example.json_exporter.pojo.Server;
 
-import java.util.ArrayList;
-
 public interface FetcherService {
-    String fetch(Server server, ArrayList<Header> headers);
+    String fetch(Server server, ArrayList<Header> headers) throws Exception;
 }

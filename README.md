@@ -40,3 +40,8 @@ java -jar json_exporter-0.0.1-SNAPSHOT.jar
 server:
   port: 8080
 ```
+
+## TODO
+
+- [ ] 后端重构代码，使用 Spring JPA
+- [ ] 升级前端 vue 版本

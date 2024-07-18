@@ -51,6 +51,9 @@ public class JsonExportMetricController {
     @Autowired
     private FetcherService fetcherService;
 
+    private final String JsonProbeSuccess = "# HELP json_probe_success json_probe_success\n"
+            + "# TYPE json_probe_success untyped\n";
+
     @ApiOperation(value = "查询Server列表信息")
     @GetMapping("server")
     public ResponseEntity<Object> getServerList() {
@@ -110,7 +113,8 @@ public class JsonExportMetricController {
         try {
             data = fetcherService.fetch(server, headers);
         } catch (Exception e) {
-            String targetDownMetric = "json_probe_success{instance=\"" + instanceString + "\", target=\""
+            String targetDownMetric = JsonProbeSuccess + "json_probe_success{instance=\"" + instanceString
+                    + "\", target=\""
                     + server.getUrl()
                     + "\"} 0\n";
             return ResponseEntity.ok().header(CONTENT_TYPE, TextFormat.CONTENT_TYPE_004).body(targetDownMetric);
@@ -132,7 +136,7 @@ public class JsonExportMetricController {
         ArrayList<JSONMetric> jmetrics = exporterServerService.getJSONMetricsByServerID(serverId);
         exporter.register(new ServerMetricCollector(data, jmetrics));
         String response = exporter.writeRegistry();
-        String targetUpMetric = "json_probe_success{instance=\"" + instanceString + "\", target=\""
+        String targetUpMetric = JsonProbeSuccess + "json_probe_success{instance=\"" + instanceString + "\", target=\""
                 + server.getUrl()
                 + "\"} 1\n";
         return ResponseEntity.ok().header(CONTENT_TYPE, TextFormat.CONTENT_TYPE_004).body(response + targetUpMetric);

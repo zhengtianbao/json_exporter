@@ -1,13 +1,13 @@
-package com.example.json_exporter;
+package com.zhengtianbao.jsonexporter;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class JsonExporterApplicationTests {
+class JsonexporterApplicationTests {
 
-    @Test
-    void contextLoads() {
-    }
+	@Test
+	void contextLoads() {
+	}
 
 }

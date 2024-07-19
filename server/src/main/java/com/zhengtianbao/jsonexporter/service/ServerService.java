@@ -31,7 +31,8 @@ public class ServerService {
 
 	@Transactional
 	public Server createServer(Server server) {
-		server.getHeaderList().forEach(header -> header.setServer(server));
+		server.getHeaderSet().forEach(header -> header.setServer(server));
+		server.getPreprocessSet().forEach(preprocess -> preprocess.setServer(server));
 		return serverRepository.save(server);
 	}
 
@@ -43,9 +44,12 @@ public class ServerService {
 					server.setUrl(updatedServer.getUrl());
 					server.setMethod(updatedServer.getMethod());
 					server.setBody(updatedServer.getBody());
-					updatedServer.getHeaderList().forEach(header -> header.setServer(server));
-					server.getHeaderList().clear();
-					server.getHeaderList().addAll(updatedServer.getHeaderList());
+					updatedServer.getHeaderSet().forEach(header -> header.setServer(server));
+					server.getHeaderSet().clear();
+					server.getHeaderSet().addAll(updatedServer.getHeaderSet());
+					updatedServer.getPreprocessSet().forEach(preprocess -> preprocess.setServer(server));
+					server.getPreprocessSet().clear();
+					server.getPreprocessSet().addAll(updatedServer.getPreprocessSet());
 					return serverRepository.save(server);
 				})
 				.orElseThrow(() -> new EntityNotFoundException("Server not found with id " + id));

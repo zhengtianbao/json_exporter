@@ -1,6 +1,6 @@
 package com.zhengtianbao.jsonexporter.model;
 
-import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -16,7 +16,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "server")
-@NamedEntityGraph(name = "graph.detail.server", attributeNodes = { @NamedAttributeNode("headerList") })
+@NamedEntityGraph(name = "graph.detail.server", attributeNodes = { @NamedAttributeNode("headerSet"),
+		@NamedAttributeNode("preprocessSet") })
 public class Server {
 
 	@Id
@@ -36,7 +37,10 @@ public class Server {
 	private String body;
 
 	@OneToMany(cascade = { CascadeType.ALL }, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "server")
-	private List<Header> headerList;
+	private Set<Header> headerSet;
+
+	@OneToMany(cascade = { CascadeType.ALL }, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "server")
+	private Set<Preprocess> preprocessSet;
 
 	protected Server() {
 	}
@@ -89,11 +93,19 @@ public class Server {
 		this.body = body;
 	}
 
-	public List<Header> getHeaderList() {
-		return headerList;
+	public Set<Header> getHeaderSet() {
+		return headerSet;
 	}
 
-	public void setHeaderList(List<Header> headerList) {
-		this.headerList = headerList;
+	public void setHeaderSet(Set<Header> headerSet) {
+		this.headerSet = headerSet;
+	}
+
+	public Set<Preprocess> getPreprocessSet() {
+		return preprocessSet;
+	}
+
+	public void setPreprocessSet(Set<Preprocess> preprocessSet) {
+		this.preprocessSet = preprocessSet;
 	}
 }

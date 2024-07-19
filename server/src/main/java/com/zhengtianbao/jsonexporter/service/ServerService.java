@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.zhengtianbao.jsonexporter.model.Server;
-import com.zhengtianbao.jsonexporter.repository.HeaderRepository;
 import com.zhengtianbao.jsonexporter.repository.ServerRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -17,9 +16,6 @@ public class ServerService {
 
 	@Autowired
 	ServerRepository serverRepository;
-
-	@Autowired
-	HeaderRepository headerRepository;
 
 	public List<Server> getDetailServers() {
 		return serverRepository.findAll();

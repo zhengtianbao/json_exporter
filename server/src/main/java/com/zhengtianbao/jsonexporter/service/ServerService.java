@@ -1,6 +1,7 @@
 package com.zhengtianbao.jsonexporter.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,16 @@ public class ServerService {
 
 	@Transactional
 	public Server createServer(Server server) {
-		server.getHeaderSet().forEach(header -> header.setServer(server));
-		server.getPreprocessSet().forEach(preprocess -> preprocess.setServer(server));
+		Optional.ofNullable(server.getHeaderSet())
+				.ifPresent(headers -> headers.forEach(header -> header.setServer(server)));
+		Optional.ofNullable(server.getPreprocessSet())
+				.ifPresent(preprocesses -> preprocesses.forEach(preprocess -> preprocess.setServer(server)));
+		Optional.ofNullable(server.getMetricSet())
+				.ifPresent(metrics -> metrics.forEach(metric -> {
+					metric.setServer(server);
+					Optional.ofNullable(metric.getLabelSet())
+							.ifPresent(labels -> labels.forEach(label -> label.setMetric(metric)));
+				}));
 		return serverRepository.save(server);
 	}
 
@@ -40,12 +49,27 @@ public class ServerService {
 					server.setUrl(updatedServer.getUrl());
 					server.setMethod(updatedServer.getMethod());
 					server.setBody(updatedServer.getBody());
-					updatedServer.getHeaderSet().forEach(header -> header.setServer(server));
-					server.getHeaderSet().clear();
-					server.getHeaderSet().addAll(updatedServer.getHeaderSet());
-					updatedServer.getPreprocessSet().forEach(preprocess -> preprocess.setServer(server));
-					server.getPreprocessSet().clear();
-					server.getPreprocessSet().addAll(updatedServer.getPreprocessSet());
+					Optional.ofNullable(updatedServer.getHeaderSet()).ifPresent(headers -> {
+						server.getHeaderSet().clear();
+						headers.forEach(header -> header.setServer(server));
+						server.getHeaderSet().addAll(headers);
+					});
+					Optional.ofNullable(updatedServer.getPreprocessSet()).ifPresent(preprocesses -> {
+						server.getPreprocessSet().clear();
+						preprocesses.forEach(preprocess -> preprocess.setServer(server));
+						server.getPreprocessSet().addAll(preprocesses);
+					});
+					Optional.ofNullable(updatedServer.getMetricSet()).ifPresent(metrics -> {
+						server.getMetricSet().clear();
+						metrics.forEach(metric -> {
+							metric.setServer(server);
+							Optional.ofNullable(metric.getLabelSet()).ifPresent(labels -> {
+								labels.forEach(label -> label.setMetric(metric));
+								metric.getLabelSet().addAll(labels);
+							});
+						});
+						server.getMetricSet().addAll(metrics);
+					});
 					return serverRepository.save(server);
 				})
 				.orElseThrow(() -> new EntityNotFoundException("Server not found with id " + id));

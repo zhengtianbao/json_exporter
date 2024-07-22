@@ -42,6 +42,9 @@ public class Server {
 	@OneToMany(cascade = { CascadeType.ALL }, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "server")
 	private Set<Preprocess> preprocessSet;
 
+	@OneToMany(cascade = { CascadeType.ALL }, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "server")
+	private Set<Metric> metricSet;
+
 	protected Server() {
 	}
 
@@ -108,4 +111,13 @@ public class Server {
 	public void setPreprocessSet(Set<Preprocess> preprocessSet) {
 		this.preprocessSet = preprocessSet;
 	}
+
+	public Set<Metric> getMetricSet() {
+		return metricSet;
+	}
+
+	public void setMetricSet(Set<Metric> metricSet) {
+		this.metricSet = metricSet;
+	}
+
 }

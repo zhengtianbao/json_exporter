@@ -132,7 +132,7 @@ public class Server {
 	}
 
 	// TODO: when request error occurs, add failed _request_count metric
-	public String fetchRequest() throws RuntimeException {
+	public String fetchMetrics() throws RuntimeException {
 		HttpHeaders headers = new HttpHeaders();
 		addHeadersToRequest(headers);
 

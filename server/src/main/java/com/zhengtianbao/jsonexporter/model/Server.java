@@ -1,6 +1,17 @@
 package com.zhengtianbao.jsonexporter.model;
 
+import java.util.Optional;
 import java.util.Set;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -120,4 +131,31 @@ public class Server {
 		this.metricSet = metricSet;
 	}
 
+	// TODO: when request error occurs, add failed _request_count metric
+	public String fetchRequest() throws RuntimeException {
+		HttpHeaders headers = new HttpHeaders();
+		addHeadersToRequest(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+
+		try {
+			ResponseEntity<String> responseEntity = restTemplate.exchange(
+					url,
+					HttpMethod.GET,
+					new HttpEntity<>(headers),
+					String.class);
+			return responseEntity.getBody();
+		} catch (HttpClientErrorException | HttpServerErrorException e) {
+			throw new RuntimeException("HTTP request failed", e);
+		} catch (ResourceAccessException e) {
+			throw new RuntimeException("Network error occurred", e);
+		} catch (RestClientException e) {
+			throw new RuntimeException("REST client error", e);
+		}
+	}
+
+	private void addHeadersToRequest(HttpHeaders headers) {
+		Optional.ofNullable(getHeaderSet())
+				.ifPresent(hs -> hs.forEach(header -> headers.add(header.getHeaderKey(), header.getHeaderValue())));
+	}
 }

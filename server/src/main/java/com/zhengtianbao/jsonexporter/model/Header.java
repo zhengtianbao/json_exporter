@@ -20,6 +20,7 @@ public class Header {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	// TODO: split value to key and value
 	@Column(name = "value")
 	private String value;
 
@@ -42,6 +43,14 @@ public class Header {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public String getHeaderKey() {
+		return value.split(":")[0].trim();
+	}
+
+	public String getHeaderValue() {
+		return value.split(":")[1].trim();
 	}
 
 	public Server getServer() {

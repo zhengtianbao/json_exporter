@@ -1,5 +1,8 @@
 package com.zhengtianbao.jsonexporter.model;
 
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -66,5 +69,32 @@ public class Preprocess {
 
 	public void setServer(Server server) {
 		this.server = server;
+	}
+
+	public String apply(String origin) {
+		Context context = Context.enter();
+		try {
+			Scriptable scope = context.initStandardObjects();
+			context.evaluateString(scope, script, "preprocess", 1, null);
+			Object result = context.evaluateString(scope, "modify('" + escapeJavaScriptString(origin) + "')",
+					"preprocessCall", 1, null);
+			return Context.toString(result);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			Context.exit();
+		}
+	}
+
+	private String escapeJavaScriptString(String str) {
+		if (str == null) {
+			return "";
+		}
+		return str.replace("\\", "\\\\")
+				.replace("'", "\\'")
+				.replace("\"", "\\\"")
+				.replace("\r", "\\r")
+				.replace("\n", "\\n")
+				.replace("\t", "\\t");
 	}
 }

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zhengtianbao.jsonexporter.model.Preprocess;
 import com.zhengtianbao.jsonexporter.repository.ServerRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -19,15 +20,21 @@ public class MetricService {
 
 	public String getMetricByServerId(Long serverId) {
 		return serverRepository.findById(serverId).map(server -> {
-			String originResponse;
+			String response;
 			try {
-				originResponse = server.fetchMetrics();
+				String originResponse = server.fetchMetrics();
+				if (server.getPreprocessSet() != null) {
+					for (Preprocess preprocess : server.getPreprocessSet()) {
+						originResponse = preprocess.apply(originResponse);
+					}
+				}
+				response = originResponse;
 			} catch (RuntimeException e) {
 				logger.error("Failed to fetch metrics: {}", e.getMessage());
 				// when server is not reachable use empty response
-				originResponse = "";
+				response = "";
 			}
-			return originResponse;
+			return response;
 		}).orElseThrow(() -> new EntityNotFoundException("Server not found with id " + serverId));
 	}
 

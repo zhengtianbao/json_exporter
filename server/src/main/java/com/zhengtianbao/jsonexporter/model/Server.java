@@ -135,14 +135,14 @@ public class Server {
 	public String fetchMetrics() throws RuntimeException {
 		HttpHeaders headers = new HttpHeaders();
 		addHeadersToRequest(headers);
-
+		HttpMethod method = HttpMethod.valueOf(getMethod());
+		HttpEntity<String> request = new HttpEntity<>(getBody(), headers);
 		RestTemplate restTemplate = new RestTemplate();
-
 		try {
 			ResponseEntity<String> responseEntity = restTemplate.exchange(
 					url,
-					HttpMethod.GET,
-					new HttpEntity<>(headers),
+					method,
+					request,
 					String.class);
 			return responseEntity.getBody();
 		} catch (HttpClientErrorException | HttpServerErrorException e) {

@@ -21,8 +21,8 @@ public class MetricService {
 	@Autowired
 	ServerRepository serverRepository;
 
-	public MetricResult getMetricByServerId(Long serverId) {
-		return serverRepository.findById(serverId).map(server -> {
+	public MetricResult getMetricByServerId(Long id) {
+		return serverRepository.findById(id).map(server -> {
 			try {
 				String originResponse = server.fetchMetrics();
 				if (server.getPreprocessSet() != null) {
@@ -32,13 +32,13 @@ public class MetricService {
 				}
 				return new MetricResult(originResponse, null);
 			} catch (JavaScriptExecutionException e) {
-				logger.error("Server {} failed to execute JavaScript: {}", serverId, e.getMessage());
+				logger.error("Server {} failed to execute JavaScript: {}", id, e.getMessage());
 				return new MetricResult(null, "Failed to preprocess metrics");
 			} catch (MetricsFetchException e) {
-				logger.error("Server {} failed to fetch metrics: {}", serverId, e.getMessage());
+				logger.error("Server {} failed to fetch metrics: {}", id, e.getMessage());
 				return new MetricResult(null, "Failed to fetch metrics");
 			}
-		}).orElseThrow(() -> new EntityNotFoundException("Server not found with id " + serverId));
+		}).orElseThrow(() -> new EntityNotFoundException("Server not found with id " + id));
 	}
 
 }

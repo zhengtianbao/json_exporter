@@ -21,9 +21,9 @@ public class MetricController {
 	@Autowired
 	MetricService metricService;
 
-	@GetMapping("/server/{serverId}/metrics")
-	public ResponseEntity<?> getServerMetrics(@PathVariable Long serverId) {
-		MetricResult result = metricService.getMetricByServerId(serverId);
+	@GetMapping("/server/{id}/metrics")
+	public ResponseEntity<?> getServerMetrics(@PathVariable Long id) {
+		MetricResult result = metricService.getMetricByServerId(id);
 
 		if (result.hasError()) {
 			return ResponseEntity.badRequest().body(new ErrorResponse(result.getError()));

@@ -74,7 +74,7 @@ public class Preprocess {
 		this.server = server;
 	}
 
-	public String apply(String origin) {
+	public String apply(String origin) throws JavaScriptExecutionException {
 		Context context = Context.enter();
 		try {
 			Scriptable scope = context.initStandardObjects();

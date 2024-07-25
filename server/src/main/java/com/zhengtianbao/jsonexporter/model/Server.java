@@ -133,7 +133,7 @@ public class Server {
 		this.metricSet = metricSet;
 	}
 
-	public String fetchMetrics() throws RuntimeException {
+	public String fetchMetrics() throws MetricsFetchException {
 		HttpHeaders headers = new HttpHeaders();
 		addHeadersToRequest(headers);
 		HttpMethod method = HttpMethod.valueOf(getMethod());

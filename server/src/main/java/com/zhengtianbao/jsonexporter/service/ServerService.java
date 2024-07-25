@@ -3,7 +3,6 @@ package com.zhengtianbao.jsonexporter.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +14,11 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class ServerService {
 
-	@Autowired
-	ServerRepository serverRepository;
+	private final ServerRepository serverRepository;
+
+	public ServerService(ServerRepository serverRepository) {
+		this.serverRepository = serverRepository;
+	}
 
 	public List<Server> getDetailServers() {
 		return serverRepository.findAll();

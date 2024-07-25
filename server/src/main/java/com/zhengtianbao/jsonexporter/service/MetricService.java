@@ -2,7 +2,6 @@ package com.zhengtianbao.jsonexporter.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zhengtianbao.jsonexporter.dto.MetricResult;
@@ -18,8 +17,11 @@ public class MetricService {
 
 	private static final Logger logger = LoggerFactory.getLogger(MetricService.class);
 
-	@Autowired
-	ServerRepository serverRepository;
+	private final ServerRepository serverRepository;
+
+	public MetricService(ServerRepository serverRepository) {
+		this.serverRepository = serverRepository;
+	}
 
 	public MetricResult getMetricByServerId(Long id) {
 		return serverRepository.findById(id).map(server -> {

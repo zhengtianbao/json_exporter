@@ -2,7 +2,6 @@ package com.zhengtianbao.jsonexporter.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,8 +22,11 @@ import com.zhengtianbao.jsonexporter.service.ServerService;
 @RequestMapping("/backend/exporter")
 public class ServerController {
 
-	@Autowired
-	ServerService serverService;
+	private final ServerService serverService;
+
+	public ServerController(ServerService serverService) {
+		this.serverService = serverService;
+	}
 
 	@GetMapping("/servers")
 	public ResponseEntity<List<Server>> getServers() {

@@ -1,6 +1,5 @@
 package com.zhengtianbao.jsonexporter.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +17,11 @@ import com.zhengtianbao.jsonexporter.service.MetricService;
 @RequestMapping("/backend/exporter")
 public class MetricController {
 
-	@Autowired
-	MetricService metricService;
+	private final MetricService metricService;
+
+	public MetricController(MetricService metricService) {
+		this.metricService = metricService;
+	}
 
 	@GetMapping("/server/{id}/metrics")
 	public ResponseEntity<?> getServerMetrics(@PathVariable Long id) {

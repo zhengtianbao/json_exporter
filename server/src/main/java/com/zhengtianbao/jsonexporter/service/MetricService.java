@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.zhengtianbao.jsonexporter.dto.MetricResult;
 import com.zhengtianbao.jsonexporter.exception.custom.JavaScriptExecutionException;
 import com.zhengtianbao.jsonexporter.exception.custom.MetricsFetchException;
+import com.zhengtianbao.jsonexporter.metrics.JsonexporterMetrics;
 import com.zhengtianbao.jsonexporter.model.Preprocess;
 import com.zhengtianbao.jsonexporter.repository.ServerRepository;
 
@@ -16,11 +17,12 @@ import jakarta.persistence.EntityNotFoundException;
 public class MetricService {
 
 	private static final Logger logger = LoggerFactory.getLogger(MetricService.class);
-
 	private final ServerRepository serverRepository;
+	private final JsonexporterMetrics jsonexporterMetrics;
 
-	public MetricService(ServerRepository serverRepository) {
+	public MetricService(ServerRepository serverRepository, JsonexporterMetrics jsonexporterMetrics) {
 		this.serverRepository = serverRepository;
+		this.jsonexporterMetrics = jsonexporterMetrics;
 	}
 
 	public MetricResult getMetricByServerId(Long id) {
@@ -35,9 +37,11 @@ public class MetricService {
 				return new MetricResult(originResponse, null);
 			} catch (JavaScriptExecutionException e) {
 				logger.error("Server {} failed to execute JavaScript: {}", id, e.getMessage());
+				jsonexporterMetrics.incrementJavaScriptExecutionFailedCounter(server.getName());
 				return new MetricResult(null, "Failed to preprocess metrics");
 			} catch (MetricsFetchException e) {
 				logger.error("Server {} failed to fetch metrics: {}", id, e.getMessage());
+				jsonexporterMetrics.incrementFetchFailedCounter(server.getName());
 				return new MetricResult(null, "Failed to fetch metrics");
 			}
 		}).orElseThrow(() -> new EntityNotFoundException("Server not found with id " + id));

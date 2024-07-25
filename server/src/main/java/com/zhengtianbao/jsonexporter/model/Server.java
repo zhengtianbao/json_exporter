@@ -133,7 +133,6 @@ public class Server {
 		this.metricSet = metricSet;
 	}
 
-	// TODO: when request error occurs, add failed _request_count metric
 	public String fetchMetrics() throws RuntimeException {
 		HttpHeaders headers = new HttpHeaders();
 		addHeadersToRequest(headers);

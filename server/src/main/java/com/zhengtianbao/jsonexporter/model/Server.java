@@ -13,6 +13,8 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.zhengtianbao.jsonexporter.exception.custom.MetricsFetchException;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -146,11 +148,11 @@ public class Server {
 					String.class);
 			return responseEntity.getBody();
 		} catch (HttpClientErrorException | HttpServerErrorException e) {
-			throw new RuntimeException("HTTP request failed", e);
+			throw new MetricsFetchException("HTTP request failed", e);
 		} catch (ResourceAccessException e) {
-			throw new RuntimeException("Network error occurred", e);
+			throw new MetricsFetchException("Network error occurred", e);
 		} catch (RestClientException e) {
-			throw new RuntimeException("REST client error", e);
+			throw new MetricsFetchException("REST client error", e);
 		}
 	}
 

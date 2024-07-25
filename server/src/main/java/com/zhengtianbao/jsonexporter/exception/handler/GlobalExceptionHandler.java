@@ -1,4 +1,4 @@
-package com.zhengtianbao.jsonexporter.exception;
+package com.zhengtianbao.jsonexporter.exception.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,9 +1,12 @@
 package com.zhengtianbao.jsonexporter.model;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.EcmaError;
+import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Scriptable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.zhengtianbao.jsonexporter.exception.custom.JavaScriptExecutionException;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -79,8 +82,14 @@ public class Preprocess {
 			Object result = context.evaluateString(scope, "modify('" + escapeJavaScriptString(origin) + "')",
 					"preprocessCall", 1, null);
 			return Context.toString(result);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (EcmaError e) {
+			throw new JavaScriptExecutionException("Error executing JavaScript function 'modify'",
+					e,
+					script + "\n\n" + "modify('" + escapeJavaScriptString(origin) + "')");
+		} catch (RhinoException e) {
+			throw new JavaScriptExecutionException("Unexpected error executing JavaScript",
+					e,
+					script + "\n\n" + "modify('" + escapeJavaScriptString(origin) + "')");
 		} finally {
 			Context.exit();
 		}

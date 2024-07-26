@@ -1,5 +1,6 @@
 package com.zhengtianbao.jsonexporter.controller;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,8 @@ import com.zhengtianbao.jsonexporter.dto.ErrorResponse;
 import com.zhengtianbao.jsonexporter.dto.MetricResponse;
 import com.zhengtianbao.jsonexporter.dto.MetricResult;
 import com.zhengtianbao.jsonexporter.service.MetricService;
+
+import io.prometheus.client.exporter.common.TextFormat;
 
 @CrossOrigin
 @RestController
@@ -31,7 +34,7 @@ public class MetricController {
 			return ResponseEntity.badRequest().body(new ErrorResponse(result.getError()));
 		} else {
 			MetricResponse response = new MetricResponse(result.getMetric());
-			return ResponseEntity.ok().header("Content-Type", "text/plain; version=0.0.4;charset=utf-8")
+			return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, TextFormat.CONTENT_TYPE_004)
 					.body(response.getPlainText());
 		}
 	}

@@ -4,12 +4,12 @@
 
 ## Requirements
 
-- java 11
+- java 17
 
 ## Build
 
 ```shell
-./mvnw package -DskipTests
+./mvnw -DskipTests package
 ```
 
 ## Run

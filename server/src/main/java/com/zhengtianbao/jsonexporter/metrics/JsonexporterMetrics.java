@@ -30,4 +30,12 @@ public class JsonexporterMetrics {
 				.increment();
 	}
 
+	public void incrementExtractFailedCounter(String server) {
+		Counter.builder("extract_failed_total")
+				.description("Total number of extract failed")
+				.tag("server", server)
+				.register(meterRegistry)
+				.increment();
+	}
+
 }
